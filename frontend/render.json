@@ -1,0 +1,12 @@
+// ملف تكوين Render للواجهة الأمامية
+{
+  "name": "smart-coin-frontend",
+  "env": {
+    "REACT_APP_API_URL": "https://smart-coin-backend.onrender.com/api",
+    "REACT_APP_TELEGRAM_BOT_URL": "http://t.me/MY_SMART_COIN_bot",
+    "REACT_APP_TON_WALLET_ADDRESS": "UQAvZYcNUln-dnITyTqWC0ryna5PbYgtNIVW9cM53aJlrgqT",
+    "NODE_ENV": "production"
+  },
+  "buildCommand": "npm install && npm run build",
+  "staticPublishPath": "./build"
+}

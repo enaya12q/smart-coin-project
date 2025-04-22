@@ -1,0 +1,15 @@
+// ملف تكوين Render لبوت تيليجرام
+{
+  "name": "smart-coin-telegram-bot",
+  "env": {
+    "TELEGRAM_BOT_TOKEN": "7750305045:AAGIOLljIog2x-6ZqDUvG0hMOs5Har1Diuw",
+    "MONGO_URI": "mongodb+srv://atlas-sample-dataset-load-67ff60f9c4c3f4476450a664:enaya12345@cluster0.4ietals.mongodb.net/?appName=Cluster0",
+    "BACKEND_URL": "https://smart-coin-backend.onrender.com/api",
+    "MINE_REWARD": "25",
+    "MINE_INTERVAL_HOURS": "24",
+    "REFERRAL_BONUS": "15",
+    "NODE_ENV": "production"
+  },
+  "buildCommand": "npm install",
+  "startCommand": "npm start"
+}

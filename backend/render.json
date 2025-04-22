@@ -1,0 +1,20 @@
+// ملف تكوين Render للخادم الخلفي
+{
+  "name": "smart-coin-backend",
+  "env": {
+    "PORT": "3000",
+    "MONGO_URI": "mongodb+srv://atlas-sample-dataset-load-67ff60f9c4c3f4476450a664:enaya12345@cluster0.4ietals.mongodb.net/?appName=Cluster0",
+    "TELEGRAM_BOT_TOKEN": "7750305045:AAGIOLljIog2x-6ZqDUvG0hMOs5Har1Diuw",
+    "TON_WALLET_ADDRESS": "UQAvZYcNUln-dnITyTqWC0ryna5PbYgtNIVW9cM53aJlrgqT",
+    "TON_API_KEY": "32e3df1bb58960b9f1da65807c36836f71b71f93363450e2624fecd31bc57c3e",
+    "JWT_SECRET": "smart_coin_secret_key_for_jwt_authentication",
+    "JWT_EXPIRES_IN": "86400",
+    "MINE_REWARD": "25",
+    "MINE_INTERVAL_HOURS": "24",
+    "REFERRAL_BONUS": "15",
+    "BASE_URL": "https://smart-coin-backend.onrender.com",
+    "NODE_ENV": "production"
+  },
+  "buildCommand": "npm install",
+  "startCommand": "npm start"
+}

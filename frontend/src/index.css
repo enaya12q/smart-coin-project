@@ -1,0 +1,423 @@
+/* تخصيص Tailwind CSS */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* استيراد خط Cairo */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap');
+
+/* المتغيرات العامة */
+:root {
+  --color-primary: #FFD700;
+  --color-primary-dark: #E6C200;
+  --color-primary-light: #FFDF33;
+  --color-secondary: #000000;
+  --color-accent: #00FFFF;
+  --color-dark: #121212;
+  --color-light: #F5F5F5;
+  --color-gray: #333333;
+  --color-gray-light: #666666;
+}
+
+/* أنماط عامة */
+body {
+  font-family: 'Cairo', sans-serif;
+  direction: rtl;
+  background-color: var(--color-secondary);
+  color: var(--color-light);
+}
+
+/* تأثيرات النيون */
+.neon-border {
+  box-shadow: 0 0 5px var(--color-primary),
+              0 0 10px var(--color-primary),
+              0 0 15px var(--color-primary);
+}
+
+.neon-text {
+  text-shadow: 0 0 5px var(--color-primary),
+               0 0 10px var(--color-primary);
+}
+
+/* أزرار مخصصة */
+.btn-primary {
+  @apply bg-primary text-black font-bold py-2 px-6 rounded-full transition-all duration-300;
+  box-shadow: 0 0 10px var(--color-primary);
+}
+
+.btn-primary:hover {
+  @apply bg-primary-dark;
+  box-shadow: 0 0 15px var(--color-primary),
+              0 0 20px var(--color-primary);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  @apply bg-gray-800 text-primary font-bold py-2 px-6 rounded-full border border-primary transition-all duration-300;
+  box-shadow: 0 0 5px var(--color-primary);
+}
+
+.btn-secondary:hover {
+  @apply bg-gray-700;
+  box-shadow: 0 0 10px var(--color-primary),
+              0 0 15px var(--color-primary);
+  transform: translateY(-2px);
+}
+
+/* بطاقات مخصصة */
+.card {
+  @apply bg-gray-900 rounded-lg p-4 transition-all duration-300;
+  border: 1px solid var(--color-primary);
+  box-shadow: 0 0 5px var(--color-primary);
+}
+
+.card:hover {
+  box-shadow: 0 0 10px var(--color-primary),
+              0 0 15px var(--color-primary);
+  transform: translateY(-5px);
+}
+
+/* حقول الإدخال */
+.input-field {
+  @apply bg-gray-800 text-white border border-primary rounded-lg px-4 py-2 w-full focus:outline-none;
+  box-shadow: 0 0 5px var(--color-primary);
+}
+
+.input-field:focus {
+  box-shadow: 0 0 10px var(--color-primary);
+}
+
+/* تأثيرات الحركة */
+.coin-spin {
+  animation: spin 10s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(360deg);
+  }
+}
+
+.pulse-glow {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 10px var(--color-primary);
+  }
+  50% {
+    opacity: 0.7;
+    box-shadow: 0 0 20px var(--color-primary);
+  }
+}
+
+/* تخطيط الشبكة */
+.grid-dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+/* شريط التنقل */
+.navbar {
+  @apply bg-gray-900 py-3 px-4 flex justify-between items-center;
+  border-bottom: 1px solid var(--color-primary);
+  box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+}
+
+/* تذييل الصفحة */
+.footer {
+  @apply bg-gray-900 py-4 px-4 text-center;
+  border-top: 1px solid var(--color-primary);
+}
+
+/* تخصيص وضع الظلام */
+.dark {
+  --color-secondary: #121212;
+  --color-light: #F5F5F5;
+}
+
+/* تخصيص وضع الضوء */
+.light {
+  --color-secondary: #F5F5F5;
+  --color-light: #121212;
+}
+
+/* تأثيرات الخلفية */
+.bg-gradient {
+  background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+}
+
+.bg-grid {
+  background-image: 
+    linear-gradient(rgba(255, 215, 0, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 215, 0, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* تخصيص الشريط الجانبي */
+.sidebar {
+  @apply bg-gray-900 h-screen fixed top-0 right-0 w-64 transition-all duration-300 transform;
+  border-left: 1px solid var(--color-primary);
+  box-shadow: -2px 0 10px rgba(255, 215, 0, 0.3);
+}
+
+/* تخصيص الرسوم البيانية */
+.chart-container {
+  @apply p-4 rounded-lg;
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--color-primary);
+}
+
+/* تخصيص العداد التنازلي */
+.countdown {
+  @apply flex justify-center items-center gap-2 my-4;
+}
+
+.countdown-item {
+  @apply bg-gray-800 rounded-lg p-2 flex flex-col items-center min-w-[60px];
+  border: 1px solid var(--color-primary);
+}
+
+.countdown-value {
+  @apply text-2xl font-bold text-primary;
+}
+
+.countdown-label {
+  @apply text-xs text-gray-400;
+}
+
+/* تخصيص شارات المستوى */
+.level-badge {
+  @apply inline-flex items-center justify-center px-2 py-1 text-xs font-bold rounded-full;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: var(--color-secondary);
+  box-shadow: 0 0 5px var(--color-primary);
+}
+
+/* تخصيص مؤشر التقدم */
+.progress-bar {
+  @apply h-2 rounded-full bg-gray-700 overflow-hidden;
+}
+
+.progress-value {
+  @apply h-full bg-primary;
+  transition: width 0.5s ease;
+}
+
+/* تخصيص الإشعارات */
+.notification {
+  @apply fixed top-4 right-4 p-4 rounded-lg shadow-lg max-w-md z-50 transform transition-all duration-300;
+  background-color: rgba(0, 0, 0, 0.9);
+  border: 1px solid var(--color-primary);
+  box-shadow: 0 0 10px var(--color-primary);
+}
+
+/* تخصيص الشعار */
+.logo {
+  @apply flex items-center gap-2;
+}
+
+.logo-text {
+  @apply text-primary font-bold text-xl;
+  text-shadow: 0 0 5px var(--color-primary);
+}
+
+/* تخصيص صفحة التحميل */
+.loading-screen {
+  @apply fixed inset-0 flex flex-col justify-center items-center z-50;
+  background-color: var(--color-secondary);
+}
+
+.loading-spinner {
+  @apply w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin;
+  box-shadow: 0 0 10px var(--color-primary);
+}
+
+/* تخصيص زر التعدين */
+.mining-button {
+  @apply relative overflow-hidden rounded-full p-1;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  box-shadow: 0 0 15px var(--color-primary);
+}
+
+.mining-button-inner {
+  @apply bg-gray-900 text-primary font-bold py-3 px-8 rounded-full flex items-center justify-center gap-2;
+}
+
+.mining-button:hover {
+  box-shadow: 0 0 20px var(--color-primary),
+              0 0 30px var(--color-primary);
+}
+
+.mining-button:active .mining-button-inner {
+  @apply bg-gray-800;
+}
+
+/* تخصيص بطاقات المتجر */
+.store-card {
+  @apply bg-gray-900 rounded-lg overflow-hidden transition-all duration-300;
+  border: 1px solid var(--color-primary);
+}
+
+.store-card-header {
+  @apply p-4 text-center font-bold text-lg;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: var(--color-secondary);
+}
+
+.store-card-body {
+  @apply p-4;
+}
+
+.store-card-price {
+  @apply text-2xl font-bold text-primary text-center my-4;
+  text-shadow: 0 0 5px var(--color-primary);
+}
+
+/* تخصيص صفحة المحفظة */
+.wallet-balance {
+  @apply text-4xl font-bold text-center my-6;
+  color: var(--color-primary);
+  text-shadow: 0 0 10px var(--color-primary);
+}
+
+.transaction-item {
+  @apply flex justify-between items-center p-3 border-b border-gray-700;
+}
+
+.transaction-amount {
+  @apply font-bold;
+}
+
+.transaction-amount.positive {
+  color: #4CAF50;
+}
+
+.transaction-amount.negative {
+  color: #F44336;
+}
+
+/* تخصيص صفحة الإحالة */
+.referral-link-container {
+  @apply bg-gray-800 p-4 rounded-lg flex items-center gap-2 my-4;
+  border: 1px dashed var(--color-primary);
+}
+
+.referral-link {
+  @apply flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-gray-300;
+}
+
+.copy-button {
+  @apply bg-primary text-black px-3 py-1 rounded-md text-sm font-bold;
+}
+
+/* تخصيص صفحة المهام */
+.task-item {
+  @apply bg-gray-800 p-4 rounded-lg my-3 flex items-start gap-4;
+  border-left: 4px solid var(--color-primary);
+}
+
+.task-checkbox {
+  @apply w-6 h-6 rounded-md border-2 border-primary flex items-center justify-center;
+}
+
+.task-checkbox.completed {
+  @apply bg-primary;
+}
+
+.task-content {
+  @apply flex-1;
+}
+
+.task-reward {
+  @apply text-primary font-bold flex items-center gap-1;
+}
+
+/* تخصيص الرسائل */
+.message {
+  @apply p-4 rounded-lg my-2;
+}
+
+.message.success {
+  @apply bg-green-900 border border-green-500;
+}
+
+.message.error {
+  @apply bg-red-900 border border-red-500;
+}
+
+.message.warning {
+  @apply bg-yellow-900 border border-yellow-500;
+}
+
+.message.info {
+  @apply bg-blue-900 border border-blue-500;
+}
+
+/* تخصيص الصفحة الرئيسية */
+.hero-section {
+  @apply py-12 px-4 text-center;
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)), url('/images/hero-bg.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.hero-title {
+  @apply text-4xl md:text-6xl font-bold mb-4;
+  color: var(--color-primary);
+  text-shadow: 0 0 10px var(--color-primary);
+}
+
+.hero-subtitle {
+  @apply text-xl md:text-2xl mb-8 max-w-2xl mx-auto;
+  color: var(--color-light);
+}
+
+/* تخصيص صفحة تسجيل الدخول */
+.login-container {
+  @apply max-w-md mx-auto my-12 p-6 rounded-lg;
+  background-color: rgba(0, 0, 0, 0.8);
+  border: 1px solid var(--color-primary);
+  box-shadow: 0 0 20px var(--color-primary);
+}
+
+.login-title {
+  @apply text-2xl font-bold text-center mb-6;
+  color: var(--color-primary);
+  text-shadow: 0 0 5px var(--color-primary);
+}
+
+.login-divider {
+  @apply my-6 flex items-center;
+}
+
+.login-divider::before,
+.login-divider::after {
+  @apply flex-1 h-px bg-gray-700;
+  content: '';
+}
+
+.login-divider-text {
+  @apply px-4 text-gray-400 text-sm;
+}
+
+/* تخصيص للأجهزة المحمولة */
+@media (max-width: 768px) {
+  .sidebar {
+    @apply w-full transform translate-x-full;
+  }
+  
+  .sidebar.open {
+    @apply transform translate-x-0;
+  }
+  
+  .grid-dashboard {
+    grid-template-columns: 1fr;
+  }
+}
