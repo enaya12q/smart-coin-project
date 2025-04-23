@@ -1,59 +1,41 @@
 const express = require('express');
 const router = express.Router();
+const auth = require('../middleware/auth');
+const referralService = require('../services/referralService');
 
-// مسار إنشاء رابط إحالة
-router.get('/link/:userId', async (req, res) => {
+// @route   GET api/referral/link
+// @desc    الحصول على رابط الإحالة
+// @access  Private
+router.get('/link', auth, async (req, res) => {
   try {
-    const { userId } = req.params;
-    
-    // سيتم تنفيذ منطق إنشاء رابط الإحالة لاحقاً
-    const referralLink = `https://t.me/MY_SMART_COIN_bot?start=ref_${userId}`;
-    
-    res.json({ 
-      success: true, 
-      referralLink,
-      referralCount: 5 // قيمة مؤقتة للاختبار
-    });
+    const referralInfo = await referralService.getReferralLink(req.user.id);
+    res.json(referralInfo);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('خطأ في الخادم');
   }
 });
 
-// مسار الحصول على إحصائيات الإحالة
-router.get('/stats/:userId', async (req, res) => {
+// @route   GET api/referral/stats
+// @desc    الحصول على إحصائيات الإحالة
+// @access  Private
+router.get('/stats', auth, async (req, res) => {
   try {
-    const { userId } = req.params;
-    
-    // سيتم تنفيذ منطق الحصول على إحصائيات الإحالة لاحقاً
-    
-    res.json({ 
-      success: true, 
-      stats: {
-        totalReferrals: 5,
-        activeReferrals: 3,
-        totalEarned: 75,
-        pendingRewards: 0
-      }
-    });
+    const referralStats = await referralService.getReferralStats(req.user.id);
+    res.json(referralStats);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('خطأ في الخادم');
   }
 });
 
-// مسار تسجيل إحالة جديدة
-router.post('/register', async (req, res) => {
+// @route   GET api/referral/referred-users
+// @desc    الحصول على المستخدمين المُحالين
+// @access  Private
+router.get('/referred-users', auth, async (req, res) => {
   try {
-    const { referrerId, newUserId } = req.body;
-    
-    // سيتم تنفيذ منطق تسجيل الإحالة لاحقاً
-    
-    res.json({ 
-      success: true, 
-      message: 'تم تسجيل الإحالة بنجاح',
-      reward: process.env.REFERRAL_BONUS
-    });
+    const referredUsers = await referralService.getReferredUsers(req.user.id);
+    res.json(referredUsers);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('خطأ في الخادم');

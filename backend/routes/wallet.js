@@ -1,36 +1,23 @@
 const express = require('express');
 const router = express.Router();
 const { check, validationResult } = require('express-validator');
-
-// استيراد نموذج المستخدم والمعاملات
-const User = require('../models/User');
-const Transaction = require('../models/Transaction');
-
-// استيراد وسيط المصادقة
 const auth = require('../middleware/auth');
+const walletService = require('../services/walletService');
+const userService = require('../services/userService');
 
 // @route   GET api/wallet/balance
-// @desc    الحصول على رصيد المستخدم
+// @desc    الحصول على رصيد المحفظة
 // @access  Private
 router.get('/balance', auth, async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
+    const user = await userService.getUserById(req.user.id);
     
     if (!user) {
       return res.status(404).json({ msg: 'المستخدم غير موجود' });
     }
     
-    // التحقق من أهلية السحب وتحديث حالة المستخدم
-    user.checkWithdrawalEligibility();
-    await user.save();
-    
-    // حساب الوقت المتبقي حتى فتح السحب
-    const withdrawalStatus = user.getTimeUntilWithdrawal();
-    
     res.json({
-      balance: user.balance,
-      canWithdraw: user.canWithdraw,
-      withdrawalStatus
+      balance: user.balance
     });
   } catch (err) {
     console.error(err.message);
@@ -39,13 +26,14 @@ router.get('/balance', auth, async (req, res) => {
 });
 
 // @route   GET api/wallet/transactions
-// @desc    الحصول على معاملات المستخدم
+// @desc    الحصول على معاملات المحفظة
 // @access  Private
 router.get('/transactions', auth, async (req, res) => {
   try {
-    const transactions = await Transaction.find({ user: req.user.id })
-      .sort({ createdAt: -1 })
-      .limit(20);
+    const limit = parseInt(req.query.limit) || 20;
+    const offset = parseInt(req.query.offset) || 0;
+    
+    const transactions = await walletService.getWalletTransactions(req.user.id, limit, offset);
     
     res.json(transactions);
   } catch (err) {
@@ -73,66 +61,22 @@ router.post('/transfer', [
   const { recipient, amount, description } = req.body;
   
   try {
-    // التحقق من وجود المستخدم المرسل
-    const sender = await User.findById(req.user.id);
-    
-    if (!sender) {
-      return res.status(404).json({ msg: 'المستخدم غير موجود' });
-    }
-    
-    // التحقق من وجود المستخدم المستلم
-    const recipientUser = await User.findOne({ username: recipient });
-    
-    if (!recipientUser) {
-      return res.status(404).json({ msg: 'المستخدم المستلم غير موجود' });
-    }
-    
-    // التحقق من أن المستخدم لا يحاول التحويل لنفسه
-    if (sender.id === recipientUser.id) {
-      return res.status(400).json({ msg: 'لا يمكن التحويل لنفسك' });
-    }
-    
-    // التحقق من كفاية الرصيد
-    if (sender.balance < amount) {
-      return res.status(400).json({ msg: 'رصيد غير كافٍ' });
-    }
-    
-    // تحديث الأرصدة
-    sender.balance -= parseFloat(amount);
-    recipientUser.balance += parseFloat(amount);
-    
-    // إنشاء معاملة للمرسل
-    const senderTransaction = new Transaction({
-      user: sender.id,
-      type: 'تحويل',
-      amount: -parseFloat(amount),
-      description: description || `تحويل إلى ${recipientUser.username}`,
-      status: 'مكتمل',
-      toUser: recipientUser.id
-    });
-    
-    // إنشاء معاملة للمستلم
-    const recipientTransaction = new Transaction({
-      user: recipientUser.id,
-      type: 'استلام',
-      amount: parseFloat(amount),
-      description: description || `استلام من ${sender.username}`,
-      status: 'مكتمل',
-      fromUser: sender.id
-    });
-    
-    // حفظ التغييرات
-    await sender.save();
-    await recipientUser.save();
-    await senderTransaction.save();
-    await recipientTransaction.save();
+    const result = await walletService.transferCoins(
+      req.user.id,
+      recipient,
+      parseFloat(amount),
+      description
+    );
     
     res.json({
       msg: 'تم التحويل بنجاح',
-      transaction: senderTransaction
+      transaction: result.transaction
     });
   } catch (err) {
     console.error(err.message);
+    if (err.message) {
+      return res.status(400).json({ msg: err.message });
+    }
     res.status(500).send('خطأ في الخادم');
   }
 });
@@ -156,54 +100,26 @@ router.post('/withdraw', [
   const { amount, walletAddress } = req.body;
   
   try {
-    // التحقق من وجود المستخدم
-    const user = await User.findById(req.user.id);
-    
-    if (!user) {
-      return res.status(404).json({ msg: 'المستخدم غير موجود' });
-    }
-    
-    // التحقق من أهلية السحب
-    user.checkWithdrawalEligibility();
-    
-    if (!user.canWithdraw) {
-      // حساب الوقت المتبقي حتى فتح السحب
-      const withdrawalStatus = user.getTimeUntilWithdrawal();
-      
-      return res.status(403).json({
-        msg: 'لا يمكن السحب قبل مرور 40 يوم من تاريخ التسجيل',
-        withdrawalStatus
-      });
-    }
-    
-    // التحقق من كفاية الرصيد
-    if (user.balance < amount) {
-      return res.status(400).json({ msg: 'رصيد غير كافٍ' });
-    }
-    
-    // الحد الأدنى للسحب
-    if (amount < 10) {
-      return res.status(400).json({ msg: 'الحد الأدنى للسحب هو 10 عملات' });
-    }
-    
-    // إنشاء معاملة سحب معلقة
-    const withdrawalTransaction = new Transaction({
-      user: user.id,
-      type: 'سحب',
-      amount: -parseFloat(amount),
-      description: `طلب سحب إلى المحفظة ${walletAddress}`,
-      status: 'معلق'
-    });
-    
-    // حفظ المعاملة
-    await withdrawalTransaction.save();
+    const result = await walletService.requestWithdrawal(
+      req.user.id,
+      parseFloat(amount),
+      walletAddress
+    );
     
     res.json({
       msg: 'تم إرسال طلب السحب بنجاح وسيتم مراجعته',
-      transaction: withdrawalTransaction
+      transaction: result.transaction
     });
   } catch (err) {
-    console.error(err.message);
+    console.error(err);
+    if (err.code === 'WITHDRAWAL_NOT_ELIGIBLE') {
+      return res.status(403).json({
+        msg: err.message,
+        withdrawalStatus: err.withdrawalStatus
+      });
+    } else if (err.message) {
+      return res.status(400).json({ msg: err.message });
+    }
     res.status(500).send('خطأ في الخادم');
   }
 });
@@ -213,24 +129,20 @@ router.post('/withdraw', [
 // @access  Private
 router.get('/withdrawal-status', auth, async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
-    
-    if (!user) {
-      return res.status(404).json({ msg: 'المستخدم غير موجود' });
-    }
-    
     // التحقق من أهلية السحب وتحديث حالة المستخدم
-    user.checkWithdrawalEligibility();
-    await user.save();
+    const canWithdraw = await userService.checkWithdrawalEligibility(req.user.id);
     
     // حساب الوقت المتبقي حتى فتح السحب
-    const withdrawalStatus = user.getTimeUntilWithdrawal();
+    const withdrawalStatus = await userService.getTimeUntilWithdrawal(req.user.id);
+    
+    // الحصول على بيانات المستخدم
+    const user = await userService.getUserById(req.user.id);
     
     res.json({
-      canWithdraw: user.canWithdraw,
+      canWithdraw,
       withdrawalStatus,
-      joinDate: user.joinDate,
-      withdrawalUnlockDate: user.withdrawalUnlockDate
+      joinDate: user.join_date,
+      withdrawalUnlockDate: user.withdrawal_unlock_date
     });
   } catch (err) {
     console.error(err.message);
